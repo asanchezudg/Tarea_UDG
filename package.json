@@ -1,0 +1,33 @@
+{
+  "name": "techwork_remote",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:seed": "prisma db seed",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "migrate": "node scripts/migrate.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.19.1",
+    "formidable": "^3.5.1",
+    "mysql2": "^3.11.0",
+    "next": "14.2.7",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.2.7",
+    "postcss": "^8",
+    "prisma": "^5.19.1",
+    "tailwindcss": "^3.4.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}

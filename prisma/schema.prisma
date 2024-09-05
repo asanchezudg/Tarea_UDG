@@ -1,0 +1,18 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("mysql://avnadmin:AVNS_1Dye_sfp1FZnU6d4yOr@mysql-techwork-udgvirtual-techwork.e.aivencloud.com:18118/Tareas?ssl-mode=REQUIRED")
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  name      String
+  fecha     String
+  materia   String
+  completed Boolean  @default(false)
+}
