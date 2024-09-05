@@ -155,6 +155,19 @@ const TaskList = () => {
 
   const uniqueMaterias = ['all', ...new Set(tasks.map(task => task.Materia))];
 
+  const calculateGradeSumByMateria = () => {
+    return tasks.reduce((acc, task) => {
+      if (!acc[task.Materia]) {
+        acc[task.Materia] = 0;
+      }
+      const grade = parseFloat(task.calificacion);
+      acc[task.Materia] += isNaN(grade) ? 0 : grade;
+      return acc;
+    }, {});
+  };
+
+  const gradeSumByMateria = calculateGradeSumByMateria();
+
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-start p-4 md:max-w-6xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold mb-4">Lista de Tareas</h1>
@@ -191,8 +204,30 @@ const TaskList = () => {
           >
             Todas
           </button>
+          <button 
+            onClick={() => setFilter('summary')} 
+            className={`px-2 py-1 md:px-4 md:py-2 text-sm md:text-base rounded ${filter === 'summary' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Calificaciones
+          </button>
         </div>
       </div>
+
+      {filter === 'summary' && (
+        <div className="w-full mb-6 flex flex-col items-center">
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Resumen de Calificaciones por Materia</h2>
+          {Object.entries(gradeSumByMateria).map(([materia, sum]) => (
+            <div key={materia} className="mb-4 text-center">
+              <h3 className="text-xl md:text-2xl font-semibold mb-2">
+                {materia}
+              </h3>
+              <div className={`${getGradeSumStyle(sum)} text-lg md:text-xl`}>
+                Calificación Final: {sum.toFixed(2)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
   
       {(filter === 'completed' || filter === 'all') && (
         <div className="w-full mb-6">
