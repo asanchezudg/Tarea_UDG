@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Consulta de las calificaciones agrupadas por materia
     const result = await query(`
       SELECT 
         Materia, 
@@ -17,24 +16,11 @@ export async function GET() {
         Materia
     `);
 
-    // Validación de la consulta
-    if (!result || result.length === 0) {
-      return NextResponse.json(
-        { message: 'No se encontraron calificaciones o las tareas no están completadas.' },
-        { status: 404 }
-      );
-    }
-
-    // Formatear el resumen de la consulta
     const resumen = result.reduce((acc, { Materia, suma, count }) => {
-      acc[Materia] = { 
-        suma: parseFloat(suma), 
-        count: parseInt(count, 10) 
-      };
+      acc[Materia] = { suma: parseFloat(suma), count: parseInt(count, 10) };
       return acc;
     }, {});
 
-    // Crear respuesta con headers de no-cache
     const response = NextResponse.json(resumen);
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
