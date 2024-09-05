@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Realizar la consulta SQL para obtener el resumen de calificaciones
     const result = await query(`
       SELECT 
         Materia, 
@@ -17,17 +16,19 @@ export async function GET() {
         Materia
     `);
 
-    // Transformar los resultados en el formato deseado
     const resumen = result.reduce((acc, { Materia, suma, count }) => {
       acc[Materia] = { suma: parseFloat(suma), count: parseInt(count) };
       return acc;
     }, {});
 
-    // Devolver la respuesta en formato JSON
-    return NextResponse.json(resumen);
+    const response = NextResponse.json(resumen);
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    
+    return response;
   } catch (error) {
     console.error('Error en la ruta API de calificaciones-resumen:', error);
-    // Manejar errores devolviendo un estado 500
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
