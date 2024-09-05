@@ -18,6 +18,7 @@ const TaskList = () => {
     fetchTasks();
   }, []);
 
+  // Función para alternar el estado de completado de una tarea
   const toggleTaskCompletion = async (taskId) => {
     const task = tasks.find(t => t.id === taskId);
     const response = await fetch('/api/tasks', {
@@ -31,6 +32,7 @@ const TaskList = () => {
     setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
   };
 
+  // Función para actualizar la calificación de una tarea
   const updateTaskGrade = async (taskId) => {
     const grade = editingGrades[taskId];
     if (grade === undefined) return;
@@ -48,6 +50,7 @@ const TaskList = () => {
     setEditingGrades(prev => ({ ...prev, [taskId]: undefined }));
   };
 
+  // Función para agrupar tareas por materia
   const groupTasksByMateria = (tasksToGroup) => {
     return tasksToGroup.reduce((acc, task) => {
       if (!acc[task.Materia]) {
@@ -58,6 +61,7 @@ const TaskList = () => {
     }, {});
   };
 
+  // Función para agrupar tareas por fecha
   const groupTasksByDate = (tasksToGroup) => {
     return tasksToGroup.reduce((acc, task) => {
       if (!acc[task.Fecha]) {
@@ -66,6 +70,20 @@ const TaskList = () => {
       acc[task.Fecha].push(task);
       return acc;
     }, {});
+  };
+
+  // Función para calcular la suma de calificaciones de una materia
+  const calculateGradeSum = (tasks) => {
+    try {
+      const sum = tasks.reduce((acc, task) => {
+        const grade = parseFloat(task.calificacion);
+        return acc + (isNaN(grade) ? 0 : grade);
+      }, 0);
+      return isNaN(sum) ? 0 : sum;
+    } catch (error) {
+      console.error("Error al calcular la suma de calificaciones:", error);
+      return 0;
+    }
   };
 
   const filteredTasks = tasks.filter(task => {
@@ -88,6 +106,7 @@ const TaskList = () => {
     return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
   });
 
+  // Función para formatear la fecha en formato largo
   const formatLongDate = (dateString) => {
     const [month, day, year] = dateString.split('/');
     const date = new Date(year, month - 1, day);
@@ -96,6 +115,7 @@ const TaskList = () => {
     return `${dayOfWeek} ${day} de ${months[date.getMonth()]} de ${year}`;
   };
 
+  // Función para calcular la diferencia de días
   const calculateDaysDifference = (taskDate) => {
     const [month, day, year] = taskDate.split('/');
     const taskDateObj = new Date(year, month - 1, day);
@@ -105,6 +125,7 @@ const TaskList = () => {
     return diffDays;
   };
 
+  // Función para obtener el estilo de la tarea según su estado
   const getTaskStyle = (task) => {
     if (task.completed) {
       return 'bg-green-200';
@@ -172,9 +193,6 @@ const TaskList = () => {
           >
             Todas
           </button>
-          <Link href="/calificaciones-resumen" className="bg-green-500 text-white px-4 py-2 rounded">
-            Ver Resumen
-          </Link>
         </div>
       </div>
   
@@ -184,7 +202,9 @@ const TaskList = () => {
           <h2 className="text-lg md:text-xl font-semibold mb-2">Tareas Completadas</h2>
           {Object.entries(groupedCompletedTasks).map(([materia, tasks]) => (
             <div key={materia} className="mb-4">
-              <h3 className="text-md font-semibold mb-2">{materia}</h3>
+              <h3 className="text-md font-semibold mb-2">
+                {materia} - Suma de calificaciones: {calculateGradeSum(tasks).toFixed(2)}
+              </h3>
               <ul className="space-y-2">
                 {tasks.map(task => (
                   <li 
