@@ -1,0 +1,9 @@
+{
+    "routes": [
+      {
+        "src": "/api/tasks",
+        "methods": ["GET", "PUT"],
+        "dest": "/api/tasks"
+      }
+    ]
+  }
