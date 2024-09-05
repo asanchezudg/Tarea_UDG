@@ -1,9 +1,16 @@
 {
+    "version": 2,
     "routes": [
       {
         "src": "/api/tasks",
-        "methods": ["GET", "PUT"],
+        "methods": ["GET", "PUT", "OPTIONS"],
         "dest": "/api/tasks"
       }
-    ]
+    ],
+    "functions": {
+      "api/**/*.js": {
+        "memory": 1024,
+        "maxDuration": 10
+      }
+    }
   }
