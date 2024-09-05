@@ -25,7 +25,7 @@ const CalificacionesResumen = () => {
         {Object.entries(resumen).map(([materia, { suma, count }]) => (
             <li key={materia} className="bg-white shadow rounded-lg p-4">
                 <h2 className="text-xl font-semibold">{materia}</h2>
-                <p>Calificacion al momento: {suma.toFixed(2)}</p>
+                <p>Calificacion al momento: </p> <p className="font-semibold">{suma.toFixed(2)}</p>
                 {/* <p>Número de tareas calificadas: {count}</p>
                 <p>Promedio: {(suma / count).toFixed(2)}</p> */}
             </li>
