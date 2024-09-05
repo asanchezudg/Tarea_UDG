@@ -18,7 +18,6 @@ const TaskList = () => {
     fetchTasks();
   }, []);
 
-  // Función para alternar el estado de completado de una tarea
   const toggleTaskCompletion = async (taskId) => {
     const task = tasks.find(t => t.id === taskId);
     const response = await fetch('/api/tasks', {
@@ -32,7 +31,6 @@ const TaskList = () => {
     setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
   };
 
-  // Función para actualizar la calificación de una tarea
   const updateTaskGrade = async (taskId) => {
     const grade = editingGrades[taskId];
     if (grade === undefined) return;
@@ -50,7 +48,6 @@ const TaskList = () => {
     setEditingGrades(prev => ({ ...prev, [taskId]: undefined }));
   };
 
-  // Función para agrupar tareas por materia
   const groupTasksByMateria = (tasksToGroup) => {
     return tasksToGroup.reduce((acc, task) => {
       if (!acc[task.Materia]) {
@@ -61,7 +58,6 @@ const TaskList = () => {
     }, {});
   };
 
-  // Función para agrupar tareas por fecha
   const groupTasksByDate = (tasksToGroup) => {
     return tasksToGroup.reduce((acc, task) => {
       if (!acc[task.Fecha]) {
@@ -72,7 +68,6 @@ const TaskList = () => {
     }, {});
   };
 
-  // Función para calcular la suma de calificaciones de una materia
   const calculateGradeSum = (tasks) => {
     try {
       const sum = tasks.reduce((acc, task) => {
@@ -83,6 +78,14 @@ const TaskList = () => {
     } catch (error) {
       console.error("Error al calcular la suma de calificaciones:", error);
       return 0;
+    }
+  };
+
+  const getGradeSumStyle = (sum) => {
+    if (sum < 60) {
+      return 'font-bold text-red-600';
+    } else {
+      return 'font-bold text-green-800';
     }
   };
 
@@ -106,7 +109,6 @@ const TaskList = () => {
     return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
   });
 
-  // Función para formatear la fecha en formato largo
   const formatLongDate = (dateString) => {
     const [month, day, year] = dateString.split('/');
     const date = new Date(year, month - 1, day);
@@ -115,7 +117,6 @@ const TaskList = () => {
     return `${dayOfWeek} ${day} de ${months[date.getMonth()]} de ${year}`;
   };
 
-  // Función para calcular la diferencia de días
   const calculateDaysDifference = (taskDate) => {
     const [month, day, year] = taskDate.split('/');
     const taskDateObj = new Date(year, month - 1, day);
@@ -125,7 +126,6 @@ const TaskList = () => {
     return diffDays;
   };
 
-  // Función para obtener el estilo de la tarea según su estado
   const getTaskStyle = (task) => {
     if (task.completed) {
       return 'bg-green-200';
@@ -159,7 +159,6 @@ const TaskList = () => {
     <div className="min-h-screen w-full flex flex-col items-center justify-start p-4 md:max-w-6xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold mb-4">Lista de Tareas</h1>
   
-      {/* Filtro por materia */}
       <select 
         value={selectedMateria} 
         onChange={(e) => setSelectedMateria(e.target.value)} 
@@ -172,7 +171,6 @@ const TaskList = () => {
         ))}
       </select>
   
-      {/* Filtros */}
       <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-center md:space-x-4 space-y-2 md:space-y-0 w-full max-w-full">
         <div className="flex justify-center space-x-2">
           <button 
@@ -196,67 +194,71 @@ const TaskList = () => {
         </div>
       </div>
   
-      {/* Lista de tareas completadas agrupadas por materia */}
       {(filter === 'completed' || filter === 'all') && (
         <div className="w-full mb-6">
           <h2 className="text-lg md:text-xl font-semibold mb-2">Tareas Completadas</h2>
-          {Object.entries(groupedCompletedTasks).map(([materia, tasks]) => (
-            <div key={materia} className="mb-4">
-              <h3 className="text-md font-semibold mb-2">
-                {materia} - Suma de calificaciones: {calculateGradeSum(tasks).toFixed(2)}
-              </h3>
-              <ul className="space-y-2">
-                {tasks.map(task => (
-                  <li 
-                    key={task.id} 
-                    className={`flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4 rounded-lg p-2 md:p-4 ${getTaskStyle(task)} w-full`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => toggleTaskCompletion(task.id)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      <div>
-                        <span className="font-semibold">{task.name}</span> - <span className="text-gray-600">{task.Fecha}</span>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-500">{task.Tarea}</div>
-                    <div className="flex items-center space-x-2">
-                      <label className="text-xs md:text-sm text-gray-500 flex items-center">
-                        Calificación:
+          {Object.entries(groupedCompletedTasks).map(([materia, tasks]) => {
+            const gradeSum = calculateGradeSum(tasks);
+            return (
+              <div key={materia} className="mb-4">
+                <h3 className="text-xl md:text-2xl font-semibold mb-2">
+                  {materia} - Calificación Final: 
+                  <span className={`${getGradeSumStyle(gradeSum)} text-xl md:text-2xl`}>
+                    {' '}{gradeSum.toFixed(2)}
+                  </span>
+                </h3>
+                <ul className="space-y-2">
+                  {tasks.map(task => (
+                    <li 
+                      key={task.id} 
+                      className={`flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4 rounded-lg p-2 md:p-4 ${getTaskStyle(task)} w-full`}
+                    >
+                      <div className="flex items-center space-x-2">
                         <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={editingGrades[task.id] !== undefined ? editingGrades[task.id] : (task.calificacion || '')}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
-                              setEditingGrades(prev => ({ ...prev, [task.id]: value }));
-                            }
-                          }}
-                          className="ml-2 w-20 px-1 py-0.5 border rounded text-center"
+                          type="checkbox"
+                          checked={task.completed}
+                          onChange={() => toggleTaskCompletion(task.id)}
+                          className="form-checkbox h-5 w-5 text-blue-600"
                         />
-                      </label>
-                      <button
-                        onClick={() => updateTaskGrade(task.id)}
-                        className="px-2 py-1 bg-blue-500 text-white rounded text-xs md:text-sm"
-                      >
-                        Enviar
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                        <div>
+                          <span className="font-semibold">{task.name}</span> - <span className="text-gray-600">{task.Fecha}</span>
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-500">{task.Tarea}</div>
+                      <div className="flex items-center space-x-2">
+                        <label className="text-xs md:text-sm text-gray-500 flex items-center">
+                          Calificación:
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={editingGrades[task.id] !== undefined ? editingGrades[task.id] : (task.calificacion || '')}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
+                                setEditingGrades(prev => ({ ...prev, [task.id]: value }));
+                              }
+                            }}
+                            className="ml-2 w-20 px-1 py-0.5 border rounded text-center"
+                          />
+                        </label>
+                        <button
+                          onClick={() => updateTaskGrade(task.id)}
+                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs md:text-sm"
+                        >
+                          Enviar
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </div>
       )}
   
-      {/* Lista de tareas pendientes agrupadas por fecha */}
       {(filter === 'pending' || filter === 'all') && (
         <div className="w-full mb-6">
           <h2 className="text-lg md:text-xl font-semibold mb-2">Tareas Pendientes</h2>
