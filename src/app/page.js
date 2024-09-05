@@ -12,8 +12,8 @@ export default function Home() {
                     height={150}
                   />
                 </div>
-      <h1 className="text-4xl font-bold mb-8 text-center">Tareas del Semestre</h1>
-      <h1 className="text-4xl font-bold mb-8 text-center">Angel Francisco Sanchez de Tagle Marquez</h1>
+      <h3 className="text-2xl font-bold mb-4 text-center">Tareas del Semestre</h3>
+      <h3 className="text-2xl font-bold mb-4 text-center">Angel Francisco Sanchez de Tagle Marquez</h3>
         <TaskList />
       </div>
     </main>
